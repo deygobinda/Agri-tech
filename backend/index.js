@@ -52,7 +52,7 @@ app.post("/recommend", async (req, res) => {
     const temperature = currentWeather.temp_c; 
     const precipitation = currentWeather.precip_mm || 0; 
 
-    console.log("Weather Data:", { temperature, precipitation }); 
+   // console.log("Weather Data:", { temperature, precipitation }); 
     
     const crops = await prisma.crop.findMany({
       where: {
@@ -67,10 +67,10 @@ app.post("/recommend", async (req, res) => {
 
     res.json(crops);
   } catch (error) {
-    console.error(
-      "Error details:",
-      error.response ? error.response.data : error.message
-    );
+    // console.error(
+    //   "Error details:",
+    //   error.response ? error.response.data : error.message
+    // );
     res.status(500).send("Server error");
   }
 });
@@ -95,21 +95,20 @@ app.post("/insert", async (req, res) => {
     ],
   });
   const crops = await prisma.crop.findMany();
-  console.log(crops);
+  //console.log(crops);
   res.json(crops);
 });
 
 app.post("/treatment", async (req , res)=>{
     try{
         const body = req.body
-    console.log(body.disease)
+   //console.log(body.disease)
     const crop = await prisma.treatment.findFirst({
         where:{
-            Crop : body.crop,
             Disease : body.disease
         }
     })
-    console.log(crop)
+  // console.log(crop)
     res.json({
         Treatement : crop.Treatment
         
