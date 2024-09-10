@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import * as tmImage from '@teachablemachine/image';
-import { URL } from '../config';
+import { URL, BackendURL } from '../config';
 
 function Predictor() {
     const [image, setImage] = useState(null);
@@ -61,7 +61,7 @@ function Predictor() {
         formData.append('file', file);
 
         try {
-            const response = await axios.post('http://localhost:3000/upload', formData);
+            const response = await axios.post(`${BackendURL}/upload`, formData);
             setImage(response.data.image);
             await predict(response.data.image);
         } catch (error) {
@@ -104,7 +104,7 @@ function Predictor() {
 
     const fetchTreatment = async (disease) => {
         try {
-            const response = await axios.post('http://localhost:3000/treatment', {
+            const response = await axios.post(`${BackendURL}/treatment`, {
                 disease
             });
 

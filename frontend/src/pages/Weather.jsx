@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { BackendURL } from '../config';
 
 const Weather = () => {
   const [city, setCity] = useState('');
@@ -10,7 +11,7 @@ const Weather = () => {
     e.preventDefault();
     setError(null);
     try {
-      const response = await axios.post('http://localhost:3000/recommend', { city });
+      const response = await axios.post(`${BackendURL}/recommend`, { city });
       setCrops(response.data);
     } catch (error) {
       //console.error('Error fetching crop recommendations', error);
