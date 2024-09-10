@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 function Navbar() {
   return (
     <div className="p-5 flex  justify-between  bg-black text-white">
-      <div className="text-2xl font-bold ">FalsalcareAI</div>
+      <div className="text-2xl font-bold ">FasalcareAI</div>
 
       <div className="flex gap-14 ">
         <div className="flex gap-10 text-slate-500  text-xl font-medium">

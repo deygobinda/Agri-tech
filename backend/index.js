@@ -35,7 +35,7 @@ app.post("/recommend", async (req, res) => {
   const { city } = req.body;
 
   try {
-    // Fetch weather data from RapidAPI
+
     const options = {
       method: "GET",
       url: "https://weatherapi-com.p.rapidapi.com/forecast.json",
@@ -50,7 +50,7 @@ app.post("/recommend", async (req, res) => {
 
     const currentWeather = weatherResponse.data.current;
     const temperature = currentWeather.temp_c; 
-    const precipitation = currentWeather.precip_mm || 0; 
+
 
    // console.log("Weather Data:", { temperature, precipitation }); 
     
@@ -59,8 +59,6 @@ app.post("/recommend", async (req, res) => {
         AND: [
           { minTemp: { lte: temperature } },
           { maxTemp: { gte: temperature } },
-          { minRainfall: { lte: precipitation } },
-          { maxRainfall: { gte: precipitation } },
         ],
       },
     });
