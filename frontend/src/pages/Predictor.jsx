@@ -61,7 +61,7 @@ function Predictor() {
         formData.append('file', file);
 
         try {
-            const response = await axios.post('http://localhost:5000/upload', formData);
+            const response = await axios.post('http://localhost:3000/upload', formData);
             setImage(response.data.image);
             await predict(response.data.image);
         } catch (error) {
