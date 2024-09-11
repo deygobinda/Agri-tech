@@ -81,11 +81,9 @@ function Predictor() {
             const result = getHighestPrediction(prediction);
             setLabel(result);
 
-            // Assuming crop information is set in the UI or can be derived
-            // For this example, I am manually setting the crop value
-            setCrop("Wheat"); // Replace with actual crop data
-
-            // Fetch treatment based on the crop and predicted disease
+            
+            setCrop("Wheat"); 
+           
             await fetchTreatment(result);
         };
     };
@@ -101,7 +99,7 @@ function Predictor() {
             }
         }
 
-        return highestClass; // Returning just the class name for prediction
+        return highestClass; 
     };
 
     const fetchTreatment = async (disease) => {
@@ -118,9 +116,12 @@ function Predictor() {
     };
 
     return (
-        <div className="flex flex-col items-center min-h-screen bg-cover bg-center py-6 sm:py-10 bg-black px-4 sm:px-6 lg:px-8">
+        <div 
+            className="flex flex-col items-center min-h-screen bg-cover bg-center py-6 sm:py-10 px-4 sm:px-6 lg:px-8"
+            style={{backgroundImage: "url('/background.jpg')"}}
+        >
             <div className="w-full max-w-lg lg:max-w-4xl">
-                <div className="bg-gray-900 text-white p-6 sm:p-10 shadow-lg rounded-xl w-full">
+                <div className="bg-gray-900 bg-opacity-50 text-white p-6 sm:p-10 shadow-lg rounded-xl w-full">
                     <div className="lg:flex lg:gap-10">
                         <div className="w-full lg:w-1/2 mb-8 lg:mb-0">
                             <h1 className="text-xl sm:text-2xl font-bold text-center text-blue-500 mb-6">Upload Crop Image</h1>
@@ -129,7 +130,7 @@ function Predictor() {
                                 onDragOver={handleDragOver}
                                 onDragLeave={handleDragLeave}
                                 onDrop={handleDrop}
-                                className={`border-2 ${dragActive ? 'border-green-500 bg-green-100' : 'border-gray-700'} border-dashed p-4 sm:p-6 rounded-lg mt-4 text-center transition-colors duration-300 ease-in-out cursor-pointer w-full`}
+                                className={`border-2 ${dragActive ? 'border-green-500 bg-green-100 bg-opacity-50' : 'border-gray-700'} border-dashed p-4 sm:p-6 rounded-lg mt-4 text-center transition-colors duration-300 ease-in-out cursor-pointer w-full`}
                             >
                                 <p className="text-gray-300 text-sm sm:text-base">{dragActive ? "Release to upload" : "Drag & Drop your image here"}</p>
                                 <input type="file" accept="image/*" onChange={handleFileChange} className="mt-4 w-full text-center text-sm sm:text-base" />
