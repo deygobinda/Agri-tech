@@ -3,7 +3,6 @@ import axios from 'axios';
 import * as tmImage from '@teachablemachine/image';
 import { URL, BackendURL } from '../config';
 
-
 function Predictor() {
     const [image, setImage] = useState(null);
     const [label, setLabel] = useState("");
@@ -12,11 +11,11 @@ function Predictor() {
     const [dragActive, setDragActive] = useState(false);
     const [treatment, setTreatment] = useState("");
     const [crop, setCrop] = useState("");
+    const [isPredicting, setIsPredicting] = useState(false);
 
     useEffect(() => {
         loadModel();
     }, []);
-
 
     const loadModel = async () => {
         try {
@@ -25,10 +24,10 @@ function Predictor() {
             const metadataURL = URL + "metadata.json";
             const model = await tmImage.load(modelURL, metadataURL);
             setModel(model);
-            setLoading(false);
         } catch (e) {
+            console.error("Error loading model", e);
+        } finally {
             setLoading(false);
-            //console.error("Error loading model", error);
         }
     };
 
@@ -63,11 +62,14 @@ function Predictor() {
         formData.append('file', file);
 
         try {
+            setIsPredicting(true);
             const response = await axios.post(`${BackendURL}/upload`, formData);
             setImage(response.data.image);
             await predict(response.data.image);
         } catch (error) {
-            //console.error("Error uploading file", error);
+            console.error("Error uploading file", error);
+        } finally {
+            setIsPredicting(false);
         }
     };
 
@@ -80,52 +82,32 @@ function Predictor() {
             const prediction = await model.predict(img);
             const result = getHighestPrediction(prediction);
             setLabel(result);
-
-            
-            setCrop("Wheat"); 
-           
+            setCrop("Wheat");
             await fetchTreatment(result);
         };
     };
 
     const getHighestPrediction = (prediction) => {
-        let highestProb = 0;
-        let highestClass = '';
-
-        for (const pred of prediction) {
-            if (pred.probability > highestProb) {
-                highestProb = pred.probability;
-                highestClass = pred.className;
-            }
-        }
-
-        return highestClass; 
+        return prediction.reduce((max, p) => p.probability > max.probability ? p : max).className;
     };
 
     const fetchTreatment = async (disease) => {
         try {
-            const response = await axios.post(`${BackendURL}/treatment`, {
-                disease
-            });
-
+            const response = await axios.post(`${BackendURL}/treatment`, { disease });
             setTreatment(response.data.Treatement);
         } catch (error) {
             console.error("Error fetching treatment", error);
-            setTreatment("Treatment will be coming soon");
+            setTreatment("Treatment information unavailable");
         }
     };
 
     return (
-        <div 
-            className="flex flex-col items-center min-h-screen bg-cover bg-center py-6 sm:py-10 px-4 sm:px-6 lg:px-8"
-            style={{backgroundImage: "url('/background.jpg')"}}
-        >
+        <div className="flex flex-col items-center min-h-screen bg-cover bg-center py-6 sm:py-10 px-4 sm:px-6 lg:px-8" style={{ backgroundImage: "url('/background.jpg')" }}>
             <div className="w-full max-w-lg lg:max-w-4xl">
                 <div className="bg-gray-900 bg-opacity-50 text-white p-6 sm:p-10 shadow-lg rounded-xl w-full">
                     <div className="lg:flex lg:gap-10">
                         <div className="w-full lg:w-1/2 mb-8 lg:mb-0">
                             <h1 className="text-xl sm:text-2xl font-bold text-center text-blue-500 mb-6">Upload Crop Image</h1>
-
                             <div
                                 onDragOver={handleDragOver}
                                 onDragLeave={handleDragLeave}
@@ -135,46 +117,33 @@ function Predictor() {
                                 <p className="text-gray-300 text-sm sm:text-base">{dragActive ? "Release to upload" : "Drag & Drop your image here"}</p>
                                 <input type="file" accept="image/*" onChange={handleFileChange} className="mt-4 w-full text-center text-sm sm:text-base" />
                             </div>
-
-                            {loading ? (
-                                <div className="flex justify-center items-center mt-6">
-                                    <svg className="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path>
-                                    </svg>
-                                </div>
-                            ) : (
-                                <button
-                                    onClick={loadModel}
-                                    className="mt-6 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200 text-sm sm:text-base"
-                                >
-                                    Repredict
-                                </button>
-                            )}
+                            <button
+                                onClick={loadModel}
+                                className="mt-6 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={loading || !image}
+                            >
+                                {loading ? 'Loading...' : 'Repredict'}
+                            </button>
                         </div>
-
                         <div className="w-full lg:w-1/2">
                             {image && (
                                 <div className="mt-6 lg:mt-0">
                                     <img src={image} alt="Uploaded" className="max-w-full h-auto rounded-lg shadow-lg" />
                                 </div>
                             )}
-
-                            {image && !label && !treatment && <div className="mt-4 text-gray-300">Loading...</div>}
-
-                            <div className="mt-4">
-                                {label && (
-                                    <div className="text-base sm:text-lg text-gray-200 font-medium">
+                            {isPredicting && <div className="mt-4 text-gray-300">Analyzing image...</div>}
+                            {!isPredicting && label && (
+                                <div className="mt-4">
+                                    <div className={`text-base sm:text-lg font-medium ${label.includes("Healthy") ? "text-green-500" : "text-red-500"}`}>
                                         Disease: {label}
                                     </div>
-                                )}
-
-                                {treatment && (
-                                    <div className="mt-2 text-base sm:text-lg text-gray-200 font-medium">
-                                        Treatment: {treatment}
-                                    </div>
-                                )}
-                            </div>
+                                    {treatment && (
+                                        <div className="mt-2 text-base sm:text-lg text-gray-200 font-medium">
+                                            Treatment: {treatment}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -182,4 +151,5 @@ function Predictor() {
         </div>
     );
 }
+
 export default Predictor;
