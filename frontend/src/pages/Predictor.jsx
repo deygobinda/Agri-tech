@@ -156,6 +156,8 @@ function Predictor() {
                             </div>
                         )}
 
+                        {!label && !treatment && <div  className='mt-6'>Loading...</div>}
+
                         <div>
                             {label && (
                                 <div className="mt-6 text-lg  text-white font-medium">
