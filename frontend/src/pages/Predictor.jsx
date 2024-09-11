@@ -3,18 +3,20 @@ import axios from 'axios';
 import * as tmImage from '@teachablemachine/image';
 import { URL, BackendURL } from '../config';
 
+
 function Predictor() {
     const [image, setImage] = useState(null);
     const [label, setLabel] = useState("");
     const [model, setModel] = useState(null);
     const [loading, setLoading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
-    const [treatment, setTreatment] = useState(""); // State to store treatment information
-    const [crop, setCrop] = useState(""); // State to store crop name
+    const [treatment, setTreatment] = useState("");
+    const [crop, setCrop] = useState("");
 
     useEffect(() => {
         loadModel();
     }, []);
+
 
     const loadModel = async () => {
         try {
@@ -116,60 +118,62 @@ function Predictor() {
     };
 
     return (
-        <div className="flex flex-col items-center min-h-screen bg-cover bg-center py-10 bg-black">
-            <div>
-                <div className='bg-black text-white p-10 shadow-lg rounded-xl w-full max-w-lg flex gap-20'>
-                    <div className=' min-w-96'>
-                        <h1 className="text-2xl font-bold text-center text-blue-600 mb-8">Upload Crop Image</h1>
+        <div className="flex flex-col items-center min-h-screen bg-cover bg-center py-6 sm:py-10 bg-black px-4 sm:px-6 lg:px-8">
+            <div className="w-full max-w-lg lg:max-w-4xl">
+                <div className="bg-gray-900 text-white p-6 sm:p-10 shadow-lg rounded-xl w-full">
+                    <div className="lg:flex lg:gap-10">
+                        <div className="w-full lg:w-1/2 mb-8 lg:mb-0">
+                            <h1 className="text-xl sm:text-2xl font-bold text-center text-blue-500 mb-6">Upload Crop Image</h1>
 
-                        <div
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                            className={`border-2 ${dragActive ? 'border-green-500 bg-green-100' : 'border-gray-300'} border-dashed p-6 rounded-lg mt-4 text-center transition-colors duration-300 ease-in-out cursor-pointer w-full`}
-                        >
-                            <p className="text-white">{dragActive ? "Release to upload" : "Drag & Drop your image here"}</p>
-                            <input type="file" accept="image/*"  onChange={handleFileChange} className="mt-4 w-full text-center" />
+                            <div
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                className={`border-2 ${dragActive ? 'border-green-500 bg-green-100' : 'border-gray-700'} border-dashed p-4 sm:p-6 rounded-lg mt-4 text-center transition-colors duration-300 ease-in-out cursor-pointer w-full`}
+                            >
+                                <p className="text-gray-300 text-sm sm:text-base">{dragActive ? "Release to upload" : "Drag & Drop your image here"}</p>
+                                <input type="file" accept="image/*" onChange={handleFileChange} className="mt-4 w-full text-center text-sm sm:text-base" />
+                            </div>
+
+                            {loading ? (
+                                <div className="flex justify-center items-center mt-6">
+                                    <svg className="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path>
+                                    </svg>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={loadModel}
+                                    className="mt-6 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200 text-sm sm:text-base"
+                                >
+                                    Repredict
+                                </button>
+                            )}
                         </div>
 
-                        {loading ? (
-                            <div className="flex justify-center items-center mt-8">
-                                <svg className="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path>
-                                </svg>
-                            </div>
-                        ) : (
-                            <button
-                                onClick={loadModel}
-                                className="mt-6 w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
-                            >
-                                Repredict
-                            </button>
-                        )}
-                    </div>
-
-                    <div className=' min-w-96'>
-                        {image && (
-                            <div className="mt-8">
-                                <img src={image} alt="Uploaded" className="max-w-full h-auto rounded-lg shadow-lg" />
-                            </div>
-                        )}
-
-                        {!label && !treatment && <div  className='mt-6'>Loading...</div>}
-
-                        <div>
-                            {label && (
-                                <div className="mt-6 text-lg  text-white font-medium">
-                                    Disease: {label}
+                        <div className="w-full lg:w-1/2">
+                            {image && (
+                                <div className="mt-6 lg:mt-0">
+                                    <img src={image} alt="Uploaded" className="max-w-full h-auto rounded-lg shadow-lg" />
                                 </div>
                             )}
 
-                            {treatment && (
-                                <div className="mt-4 text-lg  text-white font-medium">
-                                    Treatment: {treatment}
-                                </div>
-                            )}
+                            {image && !label && !treatment && <div className="mt-4 text-gray-300">Loading...</div>}
+
+                            <div className="mt-4">
+                                {label && (
+                                    <div className="text-base sm:text-lg text-gray-200 font-medium">
+                                        Disease: {label}
+                                    </div>
+                                )}
+
+                                {treatment && (
+                                    <div className="mt-2 text-base sm:text-lg text-gray-200 font-medium">
+                                        Treatment: {treatment}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -177,5 +181,4 @@ function Predictor() {
         </div>
     );
 }
-
 export default Predictor;
