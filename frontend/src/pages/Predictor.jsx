@@ -203,7 +203,7 @@ function Predictor() {
             case 3:
                 return (
                     <div className="bg-gray-800 rounded-lg shadow-lg p-6">
-                        <h2 className="text-2xl font-bold text-blue-400 mb-4">Results</h2>
+                        <h2 className="text-2xl font-bold text-blue-400 mb-4">Based on the image and environmental conditions</h2>
                         <div className="space-y-4">
                             <div className='flex  justify-between'>
                                 <div >
@@ -213,7 +213,7 @@ function Predictor() {
                                             Disease: {label}
                                         </div>
                                         {treatment && (
-                                            <div className="text-sm text-gray-300">
+                                            <div className="text-base font-semibold text-gray-300 ">
                                                 Treatment: {treatment}
                                             </div>
                                         )}
